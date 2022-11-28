@@ -14,7 +14,7 @@ export default function Register() {
                 first_name: event.target.first_name.value,
                 last_name: event.target.last_name.value,
                 email: event.target.email.value,
-                password: event.target.password.value,
+                password: event.target.password.value
             })
         });
 

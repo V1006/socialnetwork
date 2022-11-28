@@ -2,24 +2,27 @@ const express = require("express");
 const app = express();
 const compression = require("compression");
 const path = require("path");
-const { PORT = 3001 } = process.env;
+const { PORT = 3001, SESSION_SECRET } = process.env;
 const {createUser} = require("../db.js")
 const cookieSession = require("cookie-session");
+require("dotenv").config();
+
+console.log("sesstion secret",SESSION_SECRET)
 
 app.use(compression());
 app.use (express.json())
 
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
+
 // additional middleware
 app.use(
     cookieSession({
-        secret: secrets.SESSION_SECRET,
-        maxAge: 1000 * 60 * 60 * 24 * 14,
+        secret: SESSION_SECRET,
+        maxAge: 1000 * 60 * 60 * 24 * 90,
         sameSite: true,
     })
 );
-
 //
 
 ////// general setup over //////
@@ -37,8 +40,6 @@ app.post("/api/register", async (request, response) => {
     }
    
 });
-
-
 
 
 app.get("*", function (req, res) {
