@@ -7,11 +7,7 @@ const uidSafe = require("uid-safe");
 const s3upload = require("./s3");
 require("dotenv").config();
 const { PORT = 3001, SESSION_SECRET, AWS_BUCKET } = process.env;
-const {
-    createUser,
-    login,
-    getUserById /* createImage */,
-} = require("../db.js");
+const { createUser, login, getUserById, createImage } = require("../db.js");
 const cookieSession = require("cookie-session");
 
 app.use(compression());
@@ -60,17 +56,17 @@ app.post(
     uploader.single("image"),
     s3upload,
     async (request, response) => {
-        const url = `https://s3.amazonaws.com/${AWS_BUCKET}/${request.file.filename}`;
-        console.log("BODY", request.body);
-        console.log("URL", url);
-        console.log("id", request.session.user_id);
-        console.log(response);
-        /* try {
-            const newImage = await createImage({ url, ...request.body });
+        const img_url = `https://s3.amazonaws.com/${AWS_BUCKET}/${request.file.filename}`;
+        try {
+            const newImage = await createImage({
+                img_url,
+                id: request.session.user_id,
+            });
+            // console.log("NEW IMAGE", newImage); // new image is undefined why?
             response.json(newImage);
         } catch (error) {
             console.log(`Error uploading image`, error);
-        } */
+        }
     }
 );
 
@@ -96,6 +92,7 @@ app.get("/api/users/me", async (request, response) => {
         id: loggedUser.id,
         first_name: loggedUser.first_name,
         last_name: loggedUser.last_name,
+        img_url: loggedUser.img_url,
     });
 });
 

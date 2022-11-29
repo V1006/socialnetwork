@@ -1,19 +1,18 @@
-export default function Modal({ onClick }) {
+export default function Modal({ onClick, updateImg }) {
     function handleChange(event) {
         console.log(event.target.files[0]);
     }
 
-    function uploadImage(event) {
+    async function uploadImage(event) {
         event.preventDefault();
 
         const formData = new FormData(event.target);
-        console.log(formData);
-        /* const awaitingData = await fetch("/api/images", {
-                method: "POST",
-                body: formData,
-            });
-            console.log("data", awaitingData);
-            const newImage = await awaitingData.json(); */
+        const awaitingData = await fetch("/api/image", {
+            method: "POST",
+            body: formData,
+        });
+        const newImage = await awaitingData.json();
+        updateImg(newImage);
     }
 
     return (

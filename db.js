@@ -68,9 +68,9 @@ async function getUserById(id) {
 async function createImage({ img_url, id }) {
     const result = await db.query(
         `
-    UPDATE users SET img_url = $1,
-    WHERE id = $2
-    `,
+    UPDATE users SET img_url = $1
+    WHERE id = $2 RETURNING img_url
+    `, // why returning ?
         [img_url, id]
     );
     return result.rows[0];

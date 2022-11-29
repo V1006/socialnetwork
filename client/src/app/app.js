@@ -28,6 +28,11 @@ export default function App() {
         setShowModal(false);
     }
 
+    function updateImg(url) {
+        setUser({ ...user, url });
+        setShowModal(false); // why not rerender page?
+    }
+
     // creating template
     return (
         <div className="app">
@@ -35,7 +40,9 @@ export default function App() {
                 <p>Home</p>
                 <ProfilePicture user={user} onClick={onModalOpen} />
             </header>
-            {showModal && <Modal onClick={onModalClose} />}
+            {showModal && (
+                <Modal updateImg={updateImg} onClick={onModalClose} />
+            )}
         </div>
     );
 }
