@@ -1,29 +1,31 @@
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Register() {
-
-    async function handleClick(event) {
-        console.log(event.target)
+    async function handleSubmit(event) {
         event.preventDefault();
         const response = await fetch("/api/register", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 first_name: event.target.first_name.value,
                 last_name: event.target.last_name.value,
                 email: event.target.email.value,
-                password: event.target.password.value
-            })
+                password: event.target.password.value,
+            }),
         });
+        const data = await response.json();
 
-        const data = await response.json()
+        if (!data.success) {
+            return;
+        }
+        window.location.href = "/";
     }
     return (
-    <section className="registerSection">
-        <h1>Register Here</h1>
-        <form className="userData">
+        <section className="registerSection">
+            <h1>Register Here</h1>
+            <form onSubmit={handleSubmit} className="userData">
                 <div className="group">
                     <input type="text" name="first_name" required />
                     <span className="highlight"></span>
@@ -36,7 +38,7 @@ export default function Register() {
                     <span className="bar"></span>
                     <label>Last Name</label>
                 </div>
-                 <div className="group">
+                <div className="group">
                     <input type="email" name="email" required />
                     <span className="highlight"></span>
                     <span className="bar"></span>
@@ -48,11 +50,11 @@ export default function Register() {
                     <span className="bar"></span>
                     <label>Password</label>
                 </div>
-                <button onClick={handleClick}>Register</button>
-        </form>
-        <p>
-            <Link to="/login">Already signed up?</Link>
-        </p>
+                <button>Register</button>
+            </form>
+            <p>
+                <Link to="/login">Already signed up?</Link>
+            </p>
         </section>
-        )
+    );
 }

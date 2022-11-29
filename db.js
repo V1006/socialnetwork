@@ -28,6 +28,57 @@ async function createUser({ first_name, last_name, email, password }) {
     return result.rows[0];
 }
 
+// login into account
+
+async function getUserByEmail(email) {
+    const result = await db.query(
+        `
+    SELECT * FROM users WHERE email = $1
+    `,
+        [email]
+    );
+    return result.rows[0];
+}
+async function login({ email, password }) {
+    const foundUser = await getUserByEmail(email);
+    if (!foundUser) {
+        return null;
+    }
+    const match = await compare(password, foundUser.password_hash);
+    if (!match) {
+        return null;
+    }
+    return foundUser;
+}
+
+// getting user by ID
+
+async function getUserById(id) {
+    const result = await db.query(
+        `
+        SELECT * FROM users WHERE id = $1
+    `,
+        [id]
+    );
+    return result.rows[0];
+}
+
+//add the new image info to the user
+
+async function createImage({ imgUrl, id }) {
+    const result = await db.query(
+        `
+    UPDATE users SET img_url = $1,
+    WHERE id = $2
+    `,
+        [imgUrl, id]
+    );
+    return result.rows[0];
+}
+
 module.exports = {
-    createUser
+    createUser,
+    login,
+    getUserById,
+    createImage,
 };
