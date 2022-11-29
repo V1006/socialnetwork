@@ -65,13 +65,13 @@ async function getUserById(id) {
 
 //add the new image info to the user
 
-async function createImage({ imgUrl, id }) {
+async function createImage({ img_url, id }) {
     const result = await db.query(
         `
     UPDATE users SET img_url = $1,
     WHERE id = $2
     `,
-        [imgUrl, id]
+        [img_url, id]
     );
     return result.rows[0];
 }
