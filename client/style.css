@@ -1,40 +1,67 @@
+/*  Main color: #b9b4a9
+    Highlight color: #b7c240 and #878688
+*/
+
 * {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
 }
 body {
-    background-color: ghostwhite;
-    padding: 1rem
+    background-color: #b9b4a9;
+    padding: 1rem;
 }
 
+.registerSection {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-.registerSection h1{
-    margin-bottom: 1rem;
+.registerSection h1 {
+    margin-bottom: 4rem;
+    font-size: 2rem;
 }
 
 .error {
     color: red;
 }
 
-
 header {
     display: flex;
     width: 100%;
     height: 90px;
     padding: 1rem;
+    align-items: center;
 }
 
+.logo {
+    height: 100px;
+    width: 100px;
+}
+.navProfile {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
+.navProfile a {
+    text-decoration: none;
+    color: ghostwhite;
+}
+
+.navProfile a:hover {
+    text-decoration: underline;
+}
 
 .profile-picture {
-    height: 70px;
-    width: 70px;
-    border: red 1px solid;
-    margin-left: auto;
+    height: 60px;
+    width: 60px;
+    border: #b7c240 1px solid;
+    cursor: pointer;
 }
-
-
 
 .modal {
     height: 200px;
@@ -42,7 +69,7 @@ header {
     position: fixed;
     top: calc(50% - 100px);
     left: calc(50% - 150px);
-    background-color: red;
+    background-color: #878688;
 }
 
 .x {
@@ -53,34 +80,52 @@ header {
     margin-left: auto;
 }
 
+/* Profile component */
 
+.profile {
+    display: flex;
+    margin-top: 50px;
+}
 
+.profile h1 {
+    padding: 1rem;
+}
 
+.profileImg {
+    height: 300px;
+    width: 300px;
+    padding: 1rem;
+    cursor: pointer;
+}
 
+.bioForm {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
 
+/* find user component */
 
+.findUsers {
+    margin-top: 50px;
+}
 
+.foundUserContainer {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 1rem;
+}
 
+.foundUser {
+    text-align: center;
+    cursor: pointer;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.foundUser img {
+    height: 200px;
+    width: 200px;
+    object-fit: cover;
+}
 
 /*  input field design */
 
@@ -94,9 +139,9 @@ input {
     display: block;
     width: 300px;
     border: none;
-    border-bottom: 1px solid #757575;
-    background-color: rgb(24, 26, 27);
-    color: white;
+    border-bottom: 1px solid #878688;
+    background-color: #b9b4a9;
+    color: black;
 }
 input:focus {
     outline: none;
@@ -104,7 +149,7 @@ input:focus {
 
 /* LABEL ======================================= */
 label {
-    color: white;
+    color: black;
     font-size: 18px;
     font-weight: normal;
     position: absolute;
@@ -121,7 +166,7 @@ input:focus ~ label,
 input:valid ~ label {
     top: -20px;
     font-size: 14px;
-    color: #5264ae;
+    color: #878688;
 }
 
 /* BOTTOM BARS ================================= */
@@ -137,7 +182,7 @@ input:valid ~ label {
     width: 0;
     bottom: 1px;
     position: absolute;
-    background: #5264ae;
+    background: #b7c240;
     transition: 0.2s ease all;
     -moz-transition: 0.2s ease all;
     -webkit-transition: 0.2s ease all;
@@ -176,7 +221,7 @@ input:focus ~ .highlight {
 /* ANIMATIONS ================ */
 @-webkit-keyframes inputHighlighter {
     from {
-        background: #5264ae;
+        background: #b7c240;
     }
     to {
         width: 0;
@@ -185,7 +230,7 @@ input:focus ~ .highlight {
 }
 @-moz-keyframes inputHighlighter {
     from {
-        background: #5264ae;
+        background: #b7c240;
     }
     to {
         width: 0;
@@ -194,7 +239,7 @@ input:focus ~ .highlight {
 }
 @keyframes inputHighlighter {
     from {
-        background: #5264ae;
+        background: #b7c240;
     }
     to {
         width: 0;

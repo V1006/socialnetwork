@@ -4,10 +4,17 @@ const compression = require("compression");
 const path = require("path");
 const multer = require("multer");
 const uidSafe = require("uid-safe");
-const s3upload = require("./s3");
 require("dotenv").config();
+const s3upload = require("./s3");
 const { PORT = 3001, SESSION_SECRET, AWS_BUCKET } = process.env;
-const { createUser, login, getUserById, createImage } = require("../db.js");
+const {
+    createUser,
+    login,
+    getUserById,
+    createImage,
+    updateBio,
+    getUsers,
+} = require("../db.js");
 const cookieSession = require("cookie-session");
 
 app.use(compression());
@@ -70,6 +77,21 @@ app.post(
     }
 );
 
+// update bio
+
+app.put("/api/users/me/bio", async (request, response) => {
+    try {
+        const updatedBio = await updateBio({
+            ...request.body,
+            id: request.session.user_id,
+        });
+        response.json(updatedBio);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
 app.post("/api/register", async (request, response) => {
     try {
         const userRegistration = await createUser(request.body);
@@ -88,12 +110,7 @@ app.get("/api/users/me", async (request, response) => {
     }
     const loggedUser = await getUserById(request.session.user_id);
 
-    response.json({
-        id: loggedUser.id,
-        first_name: loggedUser.first_name,
-        last_name: loggedUser.last_name,
-        img_url: loggedUser.img_url,
-    });
+    response.json(loggedUser);
 });
 
 // login endpoints
@@ -112,6 +129,24 @@ app.post("/api/login", async (request, response) => {
         response.json({ success: false });
         // response.status(404).json("something went wrong");
     }
+});
+
+// finding user endpoint
+
+app.get("/api/users", async (request, response) => {
+    try {
+        const users = await getUsers(request.query.q);
+        response.json(users);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
+// logout endpoint
+app.get("/api/logout", (request, response) => {
+    request.session = null;
+    response.redirect("/");
 });
 
 app.get("*", function (req, res) {

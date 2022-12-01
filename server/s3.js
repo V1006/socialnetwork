@@ -1,6 +1,5 @@
 const { S3 } = require("aws-sdk");
 const fs = require("fs");
-require("dotenv").config(); // why ?? didnt need that in imageboard project
 
 const { AWS_KEY, AWS_SECRET, AWS_BUCKET } = process.env;
 

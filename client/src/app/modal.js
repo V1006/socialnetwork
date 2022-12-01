@@ -12,7 +12,7 @@ export default function Modal({ onClick, updateImg }) {
             body: formData,
         });
         const newImage = await awaitingData.json();
-        updateImg(newImage);
+        updateImg(newImage.img_url);
     }
 
     return (

@@ -70,10 +70,41 @@ async function createImage({ img_url, id }) {
         `
     UPDATE users SET img_url = $1
     WHERE id = $2 RETURNING img_url
-    `, // why returning ?
+    `,
         [img_url, id]
     );
     return result.rows[0];
+}
+
+// update user bio
+
+async function updateBio({ bio, id }) {
+    const result = await db.query(
+        `
+        UPDATE users SET bio = $1
+        WHERE id = $2 RETURNING bio
+    `,
+        [bio, id]
+    );
+    return result.rows[0];
+}
+
+// get user by search
+
+async function getUsers(searchQuery) {
+    if (!searchQuery) {
+        const result = await db.query(`
+            SELECT * FROM users ORDER BY id DESC LIMIT 3
+        `);
+        return result.rows;
+    }
+    const result = await db.query(
+        `
+            SELECT * FROM users WHERE first_name ILIKE $1 LIMIT 3
+        `,
+        [searchQuery + "%"]
+    );
+    return result.rows;
 }
 
 module.exports = {
@@ -81,4 +112,6 @@ module.exports = {
     login,
     getUserById,
     createImage,
+    updateBio,
+    getUsers,
 };

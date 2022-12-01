@@ -25,7 +25,7 @@ export default function login() {
         window.location.href = "/";
     }
     return (
-        <section className="loginSection">
+        <section className="registerSection">
             <h1>Login</h1>
             <form onSubmit={handleSubmit} className="userData">
                 <div className="group">
