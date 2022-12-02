@@ -107,6 +107,18 @@ async function getUsers(searchQuery) {
     return result.rows;
 }
 
+// get img by email
+
+async function getImgPreview(email) {
+    const result = await db.query(
+        `
+        SELECT img_url FROM users WHERE email = $1
+    `,
+        [email]
+    );
+    return result.rows[0];
+}
+
 module.exports = {
     createUser,
     login,
@@ -114,4 +126,5 @@ module.exports = {
     createImage,
     updateBio,
     getUsers,
+    getImgPreview,
 };

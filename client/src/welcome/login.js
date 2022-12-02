@@ -1,51 +1,50 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+// import { useState } from "react";
 
-export default function login() {
-    const [NoMatch, setNoMatch] = useState(false);
+export default function login({ onClick, email }) {
+    // const [noEmail, setNoEmail] = useState(false);
 
-    async function handleSubmit(event) {
+    function handleEmail(event) {
         event.preventDefault();
-        const response = await fetch("/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                email: event.target.email.value,
-                password: event.target.password.value,
-            }),
-        });
-        const data = await response.json();
-        console.log(data);
-        if (!data.success) {
-            setNoMatch(true);
-            return;
+        const emailValue = event.target.value;
+        // NEED TO FIX LOGIC TO CHECK IF THE USER TYPED IN A EMAIL THAT EXISTS
+        /*         async function checkEmail(email) {
+            await fetch(`/api/preview?q=${email}`);
+            const response = await fetch(`/api/preview?q=${email}`);
+            const ParsedJSON = await response.json();
+            if (!ParsedJSON) {
+                setNoEmail(!noEmail);
+                return;
+            }
         }
-        window.location.href = "/";
+        checkEmail(emailValue); */
+        email(emailValue);
     }
+
     return (
         <section className="registerSection">
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit} className="userData">
-                <div className="group">
-                    <input type="email" name="email" required />
-                    <span className="highlight"></span>
-                    <span className="bar"></span>
-                    <label>E-mail</label>
-                </div>
-                <div className="group">
-                    <input type="password" name="password" required />
-                    <span className="highlight"></span>
-                    <span className="bar"></span>
-                    <label>Password</label>
-                </div>
-                <button>Login</button>
-            </form>
-            {NoMatch && <p className="error">Email or password is wrong</p>}
-            <p>
-                <Link to="/">Sign up</Link>
-            </p>
+            <div className="form_background">
+                <h1 className="loginText">Login</h1>
+                <p>
+                    New user?{" "}
+                    <Link className="signUpText" to="/">
+                        Sign up
+                    </Link>
+                </p>
+                <form onChange={handleEmail} className="userData">
+                    <div className="group">
+                        <input type="email" name="email" required />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>E-mail</label>
+                    </div>
+                    <button onClick={onClick} className="continueButton">
+                        Next
+                    </button>
+                </form>
+                {/* {NoMatch && <p className="error">Email or password is wrong</p>} */}
+                <img src="/gg_ap_fb.png"></img>
+            </div>
         </section>
     );
 }

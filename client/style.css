@@ -7,25 +7,124 @@
     padding: 0;
     margin: 0;
 }
+
 body {
     background-color: #b9b4a9;
-    padding: 1rem;
+}
+
+main {
+    display: flex;
+}
+
+/* Landing page */
+.landingPage {
+    height: 720px;
+    width: 1280px;
 }
 
 .registerSection {
-    margin-top: 50px;
+    max-height: 100vh;
+}
+
+.landing-logo {
+    position: absolute;
+    top: calc(50% - 99px);
+    left: calc(30% - 103px);
+}
+
+.landing-logo-bg {
+    position: absolute;
+    right: 0;
+    top: 2%;
+    height: 95%;
+}
+
+.top_bar {
+    background-color: rgb(0, 0, 0);
+    position: absolute;
+    top: 40px;
+    width: 100%;
+    height: 1px;
+    z-index: 6;
+}
+
+/* form inside landing page */
+.form_background {
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(60, 88, 152);
+    border-radius: 5px;
+    background-color: white;
+    position: absolute;
+    right: 8%;
+    top: calc(50% - 286px);
+    width: 530px;
+    height: 572px;
+    z-index: 9;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+        sans-serif;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
+}
+
+.loginText {
+    font-size: 30pt;
+}
+
+.userInfoBox {
+    display: flex;
+    gap: 20px;
+}
+
+.userInfoBox img {
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
 }
 
 .registerSection h1 {
-    margin-bottom: 4rem;
     font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+.registerSection p {
+    font-size: 18pt;
 }
 
+.signUpText {
+    color: #b7c240;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.userData {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.continueButton {
+    border-radius: 2px;
+    background-color: rgb(184, 195, 62);
+    width: 140px;
+    height: 29px;
+    z-index: 23;
+}
+
+.loginButton {
+    border-radius: 2px;
+    background-color: rgb(184, 195, 62);
+    width: 140px;
+    height: 29px;
+    z-index: 23;
+}
 .error {
     color: red;
+}
+
+.changeUserSection {
+    margin-top: auto;
 }
 
 header {
@@ -140,7 +239,7 @@ input {
     width: 300px;
     border: none;
     border-bottom: 1px solid #878688;
-    background-color: #b9b4a9;
+    background-color: white;
     color: black;
 }
 input:focus {
@@ -182,7 +281,7 @@ input:valid ~ label {
     width: 0;
     bottom: 1px;
     position: absolute;
-    background: #b7c240;
+    background: #878688;
     transition: 0.2s ease all;
     -moz-transition: 0.2s ease all;
     -webkit-transition: 0.2s ease all;
@@ -221,7 +320,7 @@ input:focus ~ .highlight {
 /* ANIMATIONS ================ */
 @-webkit-keyframes inputHighlighter {
     from {
-        background: #b7c240;
+        background: #878688;
     }
     to {
         width: 0;
@@ -230,7 +329,7 @@ input:focus ~ .highlight {
 }
 @-moz-keyframes inputHighlighter {
     from {
-        background: #b7c240;
+        background: #878688;
     }
     to {
         width: 0;
@@ -239,7 +338,7 @@ input:focus ~ .highlight {
 }
 @keyframes inputHighlighter {
     from {
-        background: #b7c240;
+        background: #878688;
     }
     to {
         width: 0;

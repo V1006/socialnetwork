@@ -14,6 +14,7 @@ const {
     createImage,
     updateBio,
     getUsers,
+    getImgPreview,
 } = require("../db.js");
 const cookieSession = require("cookie-session");
 
@@ -56,6 +57,17 @@ app.use(
 ////// general setup over //////
 
 // end points
+
+// preview image
+app.get("/api/preview", async (request, response) => {
+    try {
+        const previewImg = await getImgPreview(request.query.q);
+        response.json(previewImg);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
 
 // upload image
 app.post(
@@ -137,6 +149,20 @@ app.get("/api/users", async (request, response) => {
     try {
         const users = await getUsers(request.query.q);
         response.json(users);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
+// getting single user
+
+app.get("/api/user/:otherUserId", async (request, response) => {
+    const { otherUserId } = request.params;
+    console.log("INSIDE SERVER API OTHER USER", otherUserId);
+    try {
+        const user = await getUserById(otherUserId);
+        response.json(user);
     } catch (error) {
         console.log(error);
         response.json(null);

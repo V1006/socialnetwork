@@ -11,14 +11,12 @@ export default function FindUsers() {
             const ParsedJSON = await response.json();
             setUsers(ParsedJSON);
             // console.log(ParsedJSON);
-            if (ParsedJSON.length === 0) {
-                setNoResult(true);
-            }
+            setNoResult(!ParsedJSON.length);
         }
         getUsers();
     }, [query]);
 
-    function HandleOnChange(event) {
+    function handleOnChange(event) {
         setQuery(event.target.value);
     }
 
@@ -28,7 +26,7 @@ export default function FindUsers() {
             <input
                 type="text"
                 placeholder="..search"
-                onChange={HandleOnChange}
+                onChange={handleOnChange}
             ></input>
             {noResult && <p className="error">No user found</p>}
             <div className="foundUserContainer">

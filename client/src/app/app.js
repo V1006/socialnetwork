@@ -4,6 +4,7 @@ import Modal from "./modal";
 import Profile from "./profile";
 import FindUsers from "./find-users";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import OtherUser from "./otherUser";
 
 export default function App() {
     // states
@@ -42,11 +43,6 @@ export default function App() {
         setUser({ ...user, bio });
     }
 
-    function goToProfile() {
-        console.log("goooo");
-        window.location.href = "/";
-    }
-
     function renderProfile() {
         return (
             <>
@@ -65,14 +61,18 @@ export default function App() {
     // creating template
     return (
         <div className="app">
-            <header>
-                <img className="logo" src="/Podchat_Logo.png" />
-                <ProfilePicture user={user} onClick={goToProfile} />
-            </header>
             <BrowserRouter>
+                <header>
+                    <img className="logo" src="/Podchat_Logo.png" />
+                    <ProfilePicture user={user} />
+                </header>
                 <Routes>
                     <Route path="/users" element={<FindUsers />}></Route>
                     <Route path="/" element={renderProfile()}></Route>
+                    <Route
+                        path="/user/:otherUserId"
+                        element={<OtherUser />}
+                    ></Route>
                 </Routes>
             </BrowserRouter>
         </div>
