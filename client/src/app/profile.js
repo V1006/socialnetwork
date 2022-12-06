@@ -3,15 +3,21 @@ import Bio from "./bio";
 export default function Profile({ user, onBioUpdate, onClick }) {
     return (
         <section className="profile">
-            <img
-                onClick={onClick}
-                className="profileImg"
-                src={user.img_url}
-            ></img>
+            <h1> Hey, {user.first_name}</h1>
+            <div className="infoContainer">
+                <img
+                    onClick={onClick}
+                    className="profileImg"
+                    src={user.img_url}
+                ></img>
+                <div className="profileInfos">
+                    <p className="name">
+                        {user.first_name} {user.last_name}
+                    </p>
+                    <p className="accountType">Personal Account</p>
+                </div>
+            </div>
             <div className="bioContainer">
-                <h1>
-                    {user.first_name} {user.last_name}
-                </h1>
                 <Bio onBioUpdate={onBioUpdate} user={user} />
             </div>
         </section>

@@ -63,12 +63,15 @@ export default function App() {
         <div className="app">
             <BrowserRouter>
                 <header>
-                    <img className="logo" src="/Podchat_Logo.png" />
+                    <div className="navLogoContainer">
+                        <img className="logo" src="/Podchat_Logo.png" />
+                    </div>
+
                     <ProfilePicture user={user} />
                 </header>
                 <Routes>
                     <Route path="/users" element={<FindUsers />}></Route>
-                    <Route path="/" element={renderProfile()}></Route>
+                    <Route exact path="/" element={renderProfile()}></Route>
                     <Route
                         path="/user/:otherUserId"
                         element={<OtherUser />}

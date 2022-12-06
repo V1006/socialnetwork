@@ -6,8 +6,21 @@ export default function ProfilePicture({ user }) {
     }
     return (
         <div className="navProfile">
-            <p>Hello {user.first_name},</p>
-            <a href="/api/logout">Logout</a>
+            <ul>
+                <li>
+                    <img src="/Friend_Requests.png"></img>
+                </li>
+                <li className="divider">|</li>
+                <li>
+                    <a href="#">Home</a>
+                </li>
+                <li className="divider">|</li>
+                <li>
+                    <a href="/api/logout">Logout</a>
+                </li>
+                <li className="divider">|</li>
+            </ul>
+
             <Link to="/">
                 <img
                     className="profile-picture"

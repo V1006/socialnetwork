@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function Register() {
     async function handleSubmit(event) {
@@ -24,37 +25,49 @@ export default function Register() {
     }
     return (
         <section className="registerSection">
-            <h1>Register Here</h1>
-            <form onSubmit={handleSubmit} className="userData">
-                <div className="group">
-                    <input type="text" name="first_name" required />
-                    <span className="highlight"></span>
-                    <span className="bar"></span>
-                    <label>First Name</label>
-                </div>
-                <div className="group">
-                    <input type="text" name="last_name" required />
-                    <span className="highlight"></span>
-                    <span className="bar"></span>
-                    <label>Last Name</label>
-                </div>
-                <div className="group">
-                    <input type="email" name="email" required />
-                    <span className="highlight"></span>
-                    <span className="bar"></span>
-                    <label>E-mail</label>
-                </div>
-                <div className="group">
-                    <input type="password" name="password" required />
-                    <span className="highlight"></span>
-                    <span className="bar"></span>
-                    <label>Password</label>
-                </div>
-                <button>Register</button>
-            </form>
-            <p>
-                <Link to="/login">Already signed up?</Link>
-            </p>
+            <motion.div
+                animate={{
+                    x: 0,
+                    opacity: 1,
+                }}
+                initial={{ opacity: 0, x: 70 }}
+                transition={{ type: "tween", duration: 0.25 }}
+                className="form_background"
+            >
+                <h1>Register Here</h1>
+                <form onSubmit={handleSubmit} className="userData">
+                    <div className="group">
+                        <input type="text" name="first_name" required />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>First Name</label>
+                    </div>
+                    <div className="group">
+                        <input type="text" name="last_name" required />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>Last Name</label>
+                    </div>
+                    <div className="group">
+                        <input type="email" name="email" required />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>E-mail</label>
+                    </div>
+                    <div className="group">
+                        <input type="password" name="password" required />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>Password</label>
+                    </div>
+                    <button className="continueButton">Register</button>
+                </form>
+                <p>
+                    <Link to="/" className="signUpText">
+                        Already signed up?
+                    </Link>
+                </p>
+            </motion.div>
         </section>
     );
 }

@@ -119,6 +119,65 @@ async function getImgPreview(email) {
     return result.rows[0];
 }
 
+// get email if exist
+
+async function getEmail(email) {
+    const result = await db.query(
+        `
+        SELECT email FROM users WHERE email = $1 
+    `,
+        [email]
+    );
+    return result.rows[0];
+}
+
+// checking friendship status
+
+async function getFriendship(currentUser, friendRequestUser) {
+    const result = await db.query(
+        `
+        SELECT sender_id, recipient_id, accepted FROM friendships
+        WHERE sender_id = $1 AND recipient_id = $2 
+        OR sender_id = $2 AND recipient_id = $1
+    `,
+        [currentUser, friendRequestUser]
+    );
+    return result.rows[0];
+}
+
+async function requestFriendship(currentUser, friendRequestUser) {
+    const result = await db.query(
+        `
+        INSERT INTO friendships (sender_id, recipient_id)
+        VALUES ($1, $2) RETURNING *
+    `,
+        [currentUser, friendRequestUser]
+    );
+    return result.rows[0];
+}
+
+async function acceptFriendship(currentUser, friendRequestUser) {
+    const result = await db.query(
+        `
+        UPDATE friendships SET accepted = true
+        WHERE sender_id = $1 AND recipient_id = $2 RETURNING *
+    `,
+        [friendRequestUser, currentUser]
+    );
+    return result.rows[0];
+}
+
+async function deleteFriendship(currentUser, friendRequestUser) {
+    const result = await db.query(
+        `
+        DELETE FROM friendships WHERE sender_id = $1 AND recipient_id = $2
+        OR sender_id = $2 AND recipient_id = $1
+     `,
+        [currentUser, friendRequestUser]
+    );
+    return result.rows[0];
+}
+
 module.exports = {
     createUser,
     login,
@@ -127,4 +186,9 @@ module.exports = {
     updateBio,
     getUsers,
     getImgPreview,
+    getEmail,
+    getFriendship,
+    requestFriendship,
+    acceptFriendship,
+    deleteFriendship,
 };

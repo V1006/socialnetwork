@@ -7,43 +7,35 @@ import LoginPw from "./loginPw";
 export default function Welcome() {
     const [clickedOnNext, setClickedOnNext] = useState(false);
     const [email, setEmail] = useState("");
+    // const [noEmail, setNoEmail] = useState(false);
+
+    function getEmail(email) {
+        setEmail(email);
+    }
 
     function handleOnClick() {
         setClickedOnNext(!clickedOnNext);
     }
 
-    function getEmail(email) {
-        setEmail(email);
-    }
     return (
         <BrowserRouter>
-            <div className="landingPage">
-                <img className="landing-logo" src="/Podchat_Logo.png"></img>
-                <img
-                    className="landing-logo-bg"
-                    src="/Vektor-Smartobjekt.png"
-                ></img>
-                <div className="top_bar"></div>
-                <Routes>
-                    <Route path="/" element={<Register />} />
-                    <Route
-                        path="/login"
-                        element={
-                            !clickedOnNext ? (
-                                <Login
-                                    email={getEmail}
-                                    onClick={handleOnClick}
-                                />
-                            ) : (
-                                <LoginPw
-                                    email={email}
-                                    onClick={handleOnClick}
-                                />
-                            )
-                        }
-                    />
-                </Routes>
-            </div>
+            <img className="landing-logo" src="/Podchat_Logo.png"></img>
+            <Routes>
+                <Route path="/register" element={<Register />} />
+                <Route
+                    path="/"
+                    element={
+                        !clickedOnNext ? (
+                            <Login
+                                emailFunc={getEmail}
+                                onClick={handleOnClick}
+                            />
+                        ) : (
+                            <LoginPw email={email} onClick={handleOnClick} />
+                        )
+                    }
+                />
+            </Routes>
         </BrowserRouter>
     );
 }

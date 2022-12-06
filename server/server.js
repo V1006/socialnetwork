@@ -15,6 +15,11 @@ const {
     updateBio,
     getUsers,
     getImgPreview,
+    getEmail,
+    getFriendship,
+    requestFriendship,
+    acceptFriendship,
+    deleteFriendship,
 } = require("../db.js");
 const cookieSession = require("cookie-session");
 
@@ -56,13 +61,99 @@ app.use(
 
 ////// general setup over //////
 
-// end points
+// middleware
+
+// END POINTS
+
+// friendship endpoints
+
+function getFriendshipStatus(friendship, currentUser) {
+    if (!friendship) {
+        return "NO_FRIENDSHIP";
+    }
+    if (!friendship.accepted && friendship.sender_id === currentUser) {
+        return "OUTGOING_FRIENDSHIP";
+    }
+    if (!friendship.accepted && friendship.recipient_id === currentUser) {
+        return "INCOMING_FRIENDSHIP";
+    }
+    if (friendship.accepted) {
+        return "ACCEPTED_FRIENDSHIP";
+    }
+}
+app.get("/api/friendships/:user_id", async (request, response) => {
+    const currentUser = request.session.user_id;
+    const friendRequestUser = request.params.user_id;
+    // console.log("currentUser", currentUser);
+    // console.log("friendRequestUser", friendRequestUser);
+    try {
+        const friendship = await getFriendship(currentUser, friendRequestUser);
+        const status = getFriendshipStatus(friendship, currentUser);
+        // console.log("FRIEND STATUS", friendship);
+        response.json(status);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
+app.post("/api/friendships/:user_id", async (request, response) => {
+    const currentUser = request.session.user_id;
+    const friendRequestUser = request.params.user_id;
+    try {
+        const friendship = await getFriendship(currentUser, friendRequestUser);
+        const currentStatus = getFriendshipStatus(friendship, currentUser);
+        let status;
+
+        if (currentStatus === "NO_FRIENDSHIP") {
+            await requestFriendship(currentUser, friendRequestUser);
+            status = "OUTGOING_FRIENDSHIP";
+        }
+
+        if (currentStatus === "INCOMING_FRIENDSHIP") {
+            await acceptFriendship(currentUser, friendRequestUser);
+            status = "ACCEPTED_FRIENDSHIP";
+        }
+
+        if (
+            currentStatus === "ACCEPTED_FRIENDSHIP" ||
+            currentStatus === "OUTGOING_FRIENDSHIP"
+        ) {
+            await deleteFriendship(currentUser, friendRequestUser);
+            status = "NO_FRIENDSHIP";
+        }
+
+        response.json(status);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
 
 // preview image
 app.get("/api/preview", async (request, response) => {
     try {
         const previewImg = await getImgPreview(request.query.q);
+        if (!previewImg) {
+            response.json(null);
+        }
         response.json(previewImg);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
+// check if email exists
+
+app.get("/api/email", async (request, response) => {
+    try {
+        const email = await getEmail(request.query.q);
+        if (!email) {
+            // is there a better solution?
+            response.json(null);
+        }
+        response.json(email);
     } catch (error) {
         console.log(error);
         response.json(null);
@@ -159,7 +250,6 @@ app.get("/api/users", async (request, response) => {
 
 app.get("/api/user/:otherUserId", async (request, response) => {
     const { otherUserId } = request.params;
-    console.log("INSIDE SERVER API OTHER USER", otherUserId);
     try {
         const user = await getUserById(otherUserId);
         response.json(user);
