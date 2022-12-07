@@ -8,7 +8,7 @@ export default function FriendshipButton({ user_id }) {
         async function getFriendship() {
             const response = await fetch(`/api/friendships/${user_id}`);
             const ParsedJSON = await response.json();
-            setStatus(ParsedJSON);
+            setStatus(ParsedJSON.status);
         }
         getFriendship();
     }, [user_id]);
@@ -18,7 +18,7 @@ export default function FriendshipButton({ user_id }) {
             method: "POST",
         });
         const ParsedJSON = await response.json();
-        if (ParsedJSON === "OUTGOING_FRIENDSHIP") {
+        if (ParsedJSON.status === "OUTGOING_FRIENDSHIP") {
             setClickAble(false);
         }
         setStatus(ParsedJSON);

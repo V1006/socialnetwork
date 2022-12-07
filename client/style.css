@@ -197,11 +197,33 @@ header {
 }
 
 /* right side of nav bar  */
+
+.friendList {
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(135, 134, 136);
+    border-radius: 2px;
+    background-color: white;
+    width: 250px;
+    height: 500px;
+    padding: 1rem;
+    position: absolute;
+    top: 121%;
+    right: 11%;
+    /* clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); */
+}
+
+.visible {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
 .navProfile {
     margin-left: auto;
     display: flex;
     align-items: center;
     gap: 10px;
+}
+.friendsLogo {
+    cursor: pointer;
 }
 
 .navProfile ul {

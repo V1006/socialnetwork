@@ -20,6 +20,7 @@ const {
     requestFriendship,
     acceptFriendship,
     deleteFriendship,
+    getFriendships,
 } = require("../db.js");
 const cookieSession = require("cookie-session");
 
@@ -90,7 +91,17 @@ app.get("/api/friendships/:user_id", async (request, response) => {
         const friendship = await getFriendship(currentUser, friendRequestUser);
         const status = getFriendshipStatus(friendship, currentUser);
         // console.log("FRIEND STATUS", friendship);
-        response.json(status);
+        response.json({ ...friendship, status: status });
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
+app.get("/api/friendships", async (request, response) => {
+    try {
+        const friendships = await getFriendships(request.session.user_id);
+        response.json(friendships);
     } catch (error) {
         console.log(error);
         response.json(null);
