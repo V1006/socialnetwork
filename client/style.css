@@ -1,5 +1,6 @@
 /*  Main color: #b9b4a9
     Highlight color: #b7c240 and #878688
+    overflow: auto
 */
 @font-face {
     font-family: "Open Sans";
@@ -198,21 +199,6 @@ header {
 
 /* right side of nav bar  */
 
-.friendList {
-    border-style: solid;
-    border-width: 2px;
-    border-color: rgb(135, 134, 136);
-    border-radius: 2px;
-    background-color: white;
-    width: 250px;
-    height: 500px;
-    padding: 1rem;
-    position: absolute;
-    top: 121%;
-    right: 11%;
-    /* clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); */
-}
-
 .visible {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
 }
@@ -226,7 +212,7 @@ header {
     cursor: pointer;
 }
 
-.navProfile ul {
+.navUL {
     list-style: none;
     display: flex;
     gap: 10px;
@@ -251,6 +237,77 @@ header {
     cursor: pointer;
     border-radius: 50%;
     object-fit: cover;
+}
+
+/* FriendList component */
+
+.friendList {
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(135, 134, 136);
+    border-radius: 2px;
+    background-color: white;
+    width: 300px;
+    min-height: 500px;
+    max-height: 500px;
+    padding: 1rem;
+    position: absolute;
+    top: 121%;
+    right: 9%;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    transition: clip-path 0.3s;
+}
+
+.visible {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+.AorB {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.AorB h2 {
+    height: 30px;
+    cursor: pointer;
+}
+
+.friendsListContainer ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    gap: 10px;
+}
+
+.friendInsideListContainer {
+    display: flex;
+    height: 50px;
+    align-items: center;
+}
+
+.friendInsideListContainer p {
+    margin-left: 5px;
+    font-size: 15px;
+}
+
+.friendInsideListContainer img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    object-fit: cover;
+}
+
+.acceptOrDeny {
+    display: flex;
+    gap: 20px;
+    margin-left: auto;
+}
+
+.acceptOrDeny p {
+    cursor: pointer;
 }
 
 /* modal component */
@@ -349,6 +406,9 @@ header {
     object-fit: cover;
 }
 
+.disabled {
+    background-color: rgb(135, 134, 136);
+}
 /*  input field design */
 
 .group {

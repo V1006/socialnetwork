@@ -5,6 +5,7 @@ import Profile from "./profile";
 import FindUsers from "./find-users";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import OtherUser from "./otherUser";
+import Chat from "./chat";
 
 export default function App() {
     // states
@@ -76,6 +77,7 @@ export default function App() {
                         path="/user/:otherUserId"
                         element={<OtherUser />}
                     ></Route>
+                    <Route path="/chat" element={<Chat />}></Route>
                 </Routes>
             </BrowserRouter>
         </div>

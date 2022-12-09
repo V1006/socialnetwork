@@ -23,6 +23,22 @@ const {
     getFriendships,
 } = require("../db.js");
 const cookieSession = require("cookie-session");
+// setup sockets io
+const server = require("http").Server(app);
+const socketConnect = require("socket.io");
+
+const io = socketConnect(server, {
+    allowRequest: (request, callback) =>
+        callback(
+            null,
+            request.headers.referer.startsWith(`http://localhost:3000`)
+        ),
+});
+
+io.use((socket, next) => {
+    cookieSessionMiddleware(socket.request, socket.request.res, next);
+});
+// setup sockets io
 
 app.use(compression());
 app.use(express.json());
@@ -51,13 +67,23 @@ const uploader = multer({
 // end
 
 // additional middleware
-app.use(
+// old
+/* app.use(
     cookieSession({
         secret: SESSION_SECRET,
         maxAge: 1000 * 60 * 60 * 24 * 90,
         sameSite: true,
     })
-);
+); */
+
+//new
+const cookieSessionMiddleware = cookieSession({
+    secret: SESSION_SECRET,
+    maxAge: 1000 * 60 * 60 * 24 * 14,
+    sameSite: true,
+});
+
+app.use(cookieSessionMiddleware);
 //
 
 ////// general setup over //////
@@ -130,6 +156,26 @@ app.post("/api/friendships/:user_id", async (request, response) => {
             currentStatus === "ACCEPTED_FRIENDSHIP" ||
             currentStatus === "OUTGOING_FRIENDSHIP"
         ) {
+            await deleteFriendship(currentUser, friendRequestUser);
+            status = "NO_FRIENDSHIP";
+        }
+
+        response.json(status);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
+app.post(`/api/friendships/decline/:user_id`, async (request, response) => {
+    const currentUser = request.session.user_id;
+    const friendRequestUser = request.params.user_id;
+    try {
+        const friendship = await getFriendship(currentUser, friendRequestUser);
+        const currentStatus = getFriendshipStatus(friendship, currentUser);
+        let status;
+
+        if (currentStatus === "OUTGOING_FRIENDSHIP") {
             await deleteFriendship(currentUser, friendRequestUser);
             status = "NO_FRIENDSHIP";
         }
@@ -280,6 +326,19 @@ app.get("*", function (req, res) {
     res.sendFile(path.join(__dirname, "..", "client", "index.html"));
 });
 
-app.listen(PORT, function () {
+server.listen(PORT, function () {
     console.log(`Express server listening on port ${PORT}`);
+});
+
+// sockets
+
+io.on("connection", (socket) => {
+    console.log("[social:socket] incoming socked connection", socket.id);
+    console.log("session", socket.request.session);
+    const { user_id } = socket.request.session;
+    if (!user_id) {
+        return socket.disconnect(true);
+    }
+    console.log("userId in socket", user_id);
+    socket.emit("test_event", "Testing the emit ");
 });

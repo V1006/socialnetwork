@@ -2,13 +2,21 @@ import { useState, useEffect } from "react";
 
 export default function FriendshipButton({ user_id }) {
     const [status, setStatus] = useState(null);
-    const [clickAble, setClickAble] = useState(true);
+    const [clickAble, setClickAble] = useState(false);
+    const [outgoing, setOutgoing] = useState(false);
 
     useEffect(() => {
         async function getFriendship() {
             const response = await fetch(`/api/friendships/${user_id}`);
             const ParsedJSON = await response.json();
-            setStatus(ParsedJSON.status);
+            if (ParsedJSON.status === "NO_FRIENDSHIP") {
+                setClickAble(true);
+                setStatus("Friend request");
+            } else if (ParsedJSON.status === "OUTGOING_FRIENDSHIP") {
+                setOutgoing(true);
+                setClickAble(true);
+                setStatus("Pending friend");
+            }
         }
         getFriendship();
     }, [user_id]);
@@ -18,22 +26,26 @@ export default function FriendshipButton({ user_id }) {
             method: "POST",
         });
         const ParsedJSON = await response.json();
-        if (ParsedJSON.status === "OUTGOING_FRIENDSHIP") {
-            setClickAble(false);
+        if (ParsedJSON) {
+            setStatus("Pending friend");
+            setOutgoing(true);
         }
-        setStatus(ParsedJSON);
     }
 
     return (
         <>
             {clickAble ? (
-                <button onClick={handleOnClick} className="continueButton">
-                    {status}
-                </button>
+                !outgoing ? (
+                    <button onClick={handleOnClick} className="continueButton">
+                        {status}
+                    </button>
+                ) : (
+                    <button className="continueButton disabled">
+                        {status}
+                    </button>
+                )
             ) : (
-                <button disabled className="continueButton">
-                    {status}
-                </button>
+                <div></div>
             )}
         </>
     );

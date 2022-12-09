@@ -1,26 +1,50 @@
 import { Link } from "react-router-dom";
 import FriendList from "./friendList";
-// import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ProfilePicture({ user }) {
-    // const [clicked, setClicked] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const [pendingDot, setPendingDot] = useState(false);
+
+    useEffect(() => {}, []);
+
+    function handlePendingUsers(users) {
+        if (users.length) {
+            setPendingDot(true);
+            return;
+        }
+    }
 
     if (!user.img_url) {
         user.img_url = "https://via.placeholder.com/100x100";
     }
 
-    function handleOnIconClick() {}
+    function handleOnIconClick() {
+        setVisible(!visible);
+    }
 
     return (
         <div className="navProfile">
-            <ul>
+            <ul className="navUL">
                 <li>
-                    <img
-                        className="friendsLogo"
-                        onClick={handleOnIconClick}
-                        src="/Friend_Requests.png"
-                    ></img>
-                    <FriendList />
+                    {!pendingDot ? (
+                        <img
+                            className="friendsLogo"
+                            onClick={handleOnIconClick}
+                            src="/Friend_Requests.png"
+                        ></img>
+                    ) : (
+                        <img
+                            className="friendsLogo"
+                            onClick={handleOnIconClick}
+                            src="/Friend Requests_dot2.png"
+                        ></img>
+                    )}
+
+                    <FriendList
+                        handlePendingUsers={handlePendingUsers}
+                        visible={visible}
+                    />
                 </li>
                 <li className="divider">|</li>
                 <li>
