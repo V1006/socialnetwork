@@ -21,6 +21,8 @@ const {
     acceptFriendship,
     deleteFriendship,
     getFriendships,
+    getChatMsg,
+    createMsg,
 } = require("../db.js");
 const cookieSession = require("cookie-session");
 // setup sockets io
@@ -38,7 +40,7 @@ const io = socketConnect(server, {
 io.use((socket, next) => {
     cookieSessionMiddleware(socket.request, socket.request.res, next);
 });
-// setup sockets io
+// setup sockets io end
 
 app.use(compression());
 app.use(express.json());
@@ -332,7 +334,7 @@ server.listen(PORT, function () {
 
 // sockets
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
     console.log("[social:socket] incoming socked connection", socket.id);
     console.log("session", socket.request.session);
     const { user_id } = socket.request.session;
@@ -340,5 +342,23 @@ io.on("connection", (socket) => {
         return socket.disconnect(true);
     }
     console.log("userId in socket", user_id);
-    socket.emit("test_event", "Testing the emit ");
+
+    // getting all msg from server
+    const chatMsg = await getChatMsg();
+    console.log(chatMsg);
+    socket.emit("getChat", chatMsg);
+
+    // posting new msg to server
+    socket.on("sendMsg", async (msg) => {
+        const nM = await createMsg(user_id, msg);
+        const { first_name, last_name, img_url } = await getUserById(user_id);
+        const newChatData = {
+            ...nM,
+            first_name,
+            last_name,
+            img_url,
+        };
+
+        io.emit("newMessage", newChatData);
+    });
 });

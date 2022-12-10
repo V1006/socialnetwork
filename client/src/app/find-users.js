@@ -1,18 +1,21 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 
 export default function FindUsers() {
     const [users, setUsers] = useState([]);
     const [query, setQuery] = useState("");
-    const [noResult, setNoResult] = useState(false);
+    // const [noResult, setNoResult] = useState(false);
 
     useEffect(() => {
         async function getUsers() {
             const response = await fetch(`/api/users?q=${query}`);
             const ParsedJSON = await response.json();
+            if (!ParsedJSON) {
+                setUsers([]);
+                return;
+            }
             setUsers(ParsedJSON);
             // console.log(ParsedJSON);
-            setNoResult(!ParsedJSON.length);
+            // setNoResult(!ParsedJSON.length);
         }
         getUsers();
     }, [query]);
@@ -21,24 +24,39 @@ export default function FindUsers() {
         setQuery(event.target.value);
     }
 
+    function handleClickingOnUser(id) {
+        window.location = `/user/${id}`;
+        setUsers([]);
+    }
+
     return (
         <section className="findUsers">
-            <h1>Find User</h1>
-            <input
-                type="text"
-                placeholder="..search"
-                onChange={handleOnChange}
-            ></input>
-            {noResult && <p className="error">No user found</p>}
-            <div className="foundUserContainer">
-                {users.map((user) => (
-                    <div className="foundUser" key={user.id}>
-                        <Link to={`/user/${user.id}`}>
-                            <img src={user.img_url} />
-                        </Link>
-                        <h1>{user.first_name}</h1>
-                    </div>
-                ))}
+            <div className="search-bar">
+                <select>
+                    <option value="user">User</option>
+                    <option value="podcast">Podcast</option>
+                </select>
+                <div className="inputAndLi">
+                    <input
+                        type="text"
+                        placeholder="..search"
+                        onChange={handleOnChange}
+                    ></input>
+                    <ul className="foundUserContainer">
+                        {users.map((user) => (
+                            <li className="foundUser" key={user.id}>
+                                <img
+                                    src={user.img_url}
+                                    onClick={() =>
+                                        handleClickingOnUser(user.id)
+                                    }
+                                />
+
+                                <p>{user.first_name}</p>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         </section>
     );

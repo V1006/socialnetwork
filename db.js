@@ -93,14 +93,15 @@ async function updateBio({ bio, id }) {
 
 async function getUsers(searchQuery) {
     if (!searchQuery) {
-        const result = await db.query(`
+        /*         const result = await db.query(`
             SELECT * FROM users ORDER BY id DESC LIMIT 3
         `);
-        return result.rows;
+        return result.rows; */
+        return null;
     }
     const result = await db.query(
         `
-            SELECT * FROM users WHERE first_name ILIKE $1 LIMIT 3
+            SELECT * FROM users WHERE first_name ILIKE $1
         `,
         [searchQuery + "%"]
     );
@@ -193,6 +194,27 @@ async function getFriendships(id) {
     return results.rows;
 }
 
+async function getChatMsg() {
+    const result = await db.query(`
+        SELECT chat.id, chat.sender_id, chat.msg,
+        users.first_name, users.last_name, users.img_url
+        FROM chat JOIN users
+        ON (users.id = chat.sender_id)
+    `);
+    return result.rows;
+}
+
+async function createMsg(sender_id, msg) {
+    const result = await db.query(
+        `
+        INSERT INTO chat (sender_id, msg)
+        VALUES ($1, $2) RETURNING *
+    `,
+        [sender_id, msg]
+    );
+    return result.rows[0];
+}
+
 module.exports = {
     createUser,
     login,
@@ -207,4 +229,6 @@ module.exports = {
     acceptFriendship,
     deleteFriendship,
     getFriendships,
+    getChatMsg,
+    createMsg,
 };

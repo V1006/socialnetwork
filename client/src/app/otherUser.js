@@ -17,13 +17,18 @@ export default function OtherUser() {
 
     return (
         <>
-            <section className="findUsers">
-                <div className="foundUserContainer">
-                    <div className="foundUser">
-                        <img src={user.img_url} />
-                        <h1>{user.first_name}</h1>
-                        <p>{user.bio}</p>
+            <section className="profile">
+                <div className="infoContainer">
+                    <img className="profileImg" src={user.img_url}></img>
+                    <div className="profileInfos">
+                        <p className="name">
+                            {user.first_name} {user.last_name}
+                        </p>
+                        <p className="accountType">Personal Account</p>
                     </div>
+                </div>
+                <div className="bioContainer">
+                    <p>{user.bio}</p>
                 </div>
             </section>
             <FriendshipButton user_id={otherUserId} />

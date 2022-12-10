@@ -48,7 +48,7 @@ export default function ProfilePicture({ user }) {
                 </li>
                 <li className="divider">|</li>
                 <li>
-                    <a href="#">Home</a>
+                    <a href="/">Home</a>
                 </li>
                 <li className="divider">|</li>
                 <li>

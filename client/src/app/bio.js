@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function Bio({ user, onBioUpdate }) {
     const [isEditing, setEditing] = useState(false);
-    console.log("BIO", user);
+
     function onEditButtonClick() {
         setEditing(!isEditing);
     }

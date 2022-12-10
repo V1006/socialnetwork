@@ -2,10 +2,10 @@ import ProfilePicture from "./profilePicture";
 import { useState, useEffect } from "react";
 import Modal from "./modal";
 import Profile from "./profile";
-import FindUsers from "./find-users";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import OtherUser from "./otherUser";
 import Chat from "./chat";
+import FindUsers from "./find-users";
 
 export default function App() {
     // states
@@ -64,21 +64,22 @@ export default function App() {
         <div className="app">
             <BrowserRouter>
                 <header>
-                    <div className="navLogoContainer">
-                        <img className="logo" src="/Podchat_Logo.png" />
+                    <div className="leftSideOfNav">
+                        <div className="navLogoContainer">
+                            <img className="logo" src="/Podchat_Logo.png" />
+                        </div>
+                        <FindUsers />
                     </div>
-
                     <ProfilePicture user={user} />
                 </header>
                 <Routes>
-                    <Route path="/users" element={<FindUsers />}></Route>
                     <Route exact path="/" element={renderProfile()}></Route>
                     <Route
                         path="/user/:otherUserId"
                         element={<OtherUser />}
                     ></Route>
-                    <Route path="/chat" element={<Chat />}></Route>
                 </Routes>
+                <Chat />
             </BrowserRouter>
         </div>
     );
