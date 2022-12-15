@@ -6,11 +6,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import OtherUser from "./otherUser";
 import Chat from "./chat";
 import FindUsers from "./find-users";
+import Podcast from "./podcast";
 
 export default function App() {
     // states
     const [showModal, setShowModal] = useState(false);
     const [user, setUser] = useState(null);
+    const [idClickedFriend, setIdClickedFriend] = useState(null);
 
     useEffect(() => {
         async function getUser() {
@@ -44,6 +46,14 @@ export default function App() {
         setUser({ ...user, bio });
     }
 
+    function handleClickOnChatIcon(friendId) {
+        setIdClickedFriend(friendId);
+    }
+
+    function handleChangeTheClickedFriend(state) {
+        setIdClickedFriend(state);
+    }
+
     function renderProfile() {
         return (
             <>
@@ -70,7 +80,10 @@ export default function App() {
                         </div>
                         <FindUsers />
                     </div>
-                    <ProfilePicture user={user} />
+                    <ProfilePicture
+                        friendClick={handleClickOnChatIcon}
+                        user={user}
+                    />
                 </header>
                 <Routes>
                     <Route exact path="/" element={renderProfile()}></Route>
@@ -78,8 +91,15 @@ export default function App() {
                         path="/user/:otherUserId"
                         element={<OtherUser />}
                     ></Route>
+                    <Route
+                        path="/podcast/:podcastName"
+                        element={<Podcast />}
+                    ></Route>
                 </Routes>
-                <Chat />
+                <Chat
+                    friendId={idClickedFriend}
+                    resetFriend={handleChangeTheClickedFriend}
+                />
             </BrowserRouter>
         </div>
     );

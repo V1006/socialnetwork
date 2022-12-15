@@ -23,6 +23,9 @@ const {
     getFriendships,
     getChatMsg,
     createMsg,
+    getLastMsg,
+    getPodcastByName,
+    getPods,
 } = require("../db.js");
 const cookieSession = require("cookie-session");
 // setup sockets io
@@ -177,7 +180,7 @@ app.post(`/api/friendships/decline/:user_id`, async (request, response) => {
         const currentStatus = getFriendshipStatus(friendship, currentUser);
         let status;
 
-        if (currentStatus === "OUTGOING_FRIENDSHIP") {
+        if (currentStatus === "INCOMING_FRIENDSHIP") {
             await deleteFriendship(currentUser, friendRequestUser);
             status = "NO_FRIENDSHIP";
         }
@@ -318,6 +321,28 @@ app.get("/api/user/:otherUserId", async (request, response) => {
     }
 });
 
+// getting podcast
+app.get("/api/podcast/:podcastName", async (request, response) => {
+    const { podcastName } = request.params;
+    try {
+        const podcast = await getPodcastByName(podcastName);
+        response.json(podcast);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
+app.get("/api/podcast/", async (request, response) => {
+    try {
+        const pods = await getPods(request.query.q);
+        response.json(pods);
+    } catch (error) {
+        console.log(error);
+        response.json(null);
+    }
+});
+
 // logout endpoint
 app.get("/api/logout", (request, response) => {
     request.session = null;
@@ -334,6 +359,9 @@ server.listen(PORT, function () {
 
 // sockets
 
+const userMap = new Map();
+const socketIDs = {};
+
 io.on("connection", async (socket) => {
     console.log("[social:socket] incoming socked connection", socket.id);
     console.log("session", socket.request.session);
@@ -343,22 +371,91 @@ io.on("connection", async (socket) => {
     }
     console.log("userId in socket", user_id);
 
+    socket.on("add user", () => {
+        userMap.set(user_id, socket.id);
+    });
+
     // getting all msg from server
-    const chatMsg = await getChatMsg();
-    console.log(chatMsg);
-    socket.emit("getChat", chatMsg);
+    socket.on("clickedFriendID", async (friendID) => {
+        const lastMsgWithFriend = await getChatMsg(friendID, user_id);
+        if (!lastMsgWithFriend) {
+            socket.emit("getChat", [], user_id);
+            return;
+        }
+        socket.emit("getChat", lastMsgWithFriend, user_id);
+    });
+
+    socket.on("chatMounted", async () => {
+        const lastMsg = await getLastMsg(user_id);
+
+        if (!lastMsg) {
+            socket.emit("getChat", [], user_id);
+            return;
+        }
+        if (lastMsg.sender_id === user_id) {
+            const lastSenderMsg = await getChatMsg(
+                user_id,
+                lastMsg.recipient_id
+            );
+            socket.emit("getChat", lastSenderMsg, user_id);
+        } else {
+            const lastReceiverMsg = await getChatMsg(
+                lastMsg.sender_id,
+                user_id
+            );
+            socket.emit("getChat", lastReceiverMsg, user_id);
+        }
+    });
 
     // posting new msg to server
-    socket.on("sendMsg", async (msg) => {
-        const nM = await createMsg(user_id, msg);
+    socket.on("private message", async (data) => {
+        const nM = await createMsg(user_id, data.to, data.msg);
         const { first_name, last_name, img_url } = await getUserById(user_id);
+
+        const recipientUserName = userMap.get(data.to);
         const newChatData = {
             ...nM,
             first_name,
             last_name,
             img_url,
         };
+        io.to(recipientUserName).emit("private message", newChatData);
 
-        io.emit("newMessage", newChatData);
+        socket.emit("private message", newChatData);
+
+        /* io.emit("newMessage", newChatData); */
+    });
+
+    // updating pending and friends in friend list
+
+    socketIDs[socket.id] = user_id;
+
+    socket.on("testEvent", async () => {
+        try {
+            const friendships = await getFriendships(user_id);
+            console.log(friendships);
+            socket.emit("getFriendListStatus", friendships);
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    socket.on("newFriendRequest", async (userID) => {
+        const otherUsersSocketIDs = [];
+
+        for (const key in socketIDs) {
+            if (socketIDs[key] == userID) {
+                otherUsersSocketIDs.push(key);
+            }
+        }
+        const friendships = await getFriendships(userID);
+        otherUsersSocketIDs.forEach((user) => {
+            io.to(user).emit("getFriendListStatus", friendships);
+        });
+    });
+
+    socket.on("disconnect", () => {
+        console.log("bye", user_id);
+        delete socketIDs[socket.id];
     });
 });

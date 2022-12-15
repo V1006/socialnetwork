@@ -3,7 +3,7 @@ import Bio from "./bio";
 export default function Profile({ user, onBioUpdate, onClick }) {
     return (
         <section className="profile">
-            <h1> Hey, {user.first_name}</h1>
+            <h1 className="profileH1"> Hey, {user.first_name}</h1>
             <div className="infoContainer">
                 <img
                     onClick={onClick}

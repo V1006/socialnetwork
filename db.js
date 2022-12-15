@@ -194,25 +194,63 @@ async function getFriendships(id) {
     return results.rows;
 }
 
-async function getChatMsg() {
-    const result = await db.query(`
-        SELECT chat.id, chat.sender_id, chat.msg,
+async function getChatMsg(senderId, recipientId) {
+    const result = await db.query(
+        `
+        SELECT chat.id, chat.sender_id, chat.recipient_id, chat.msg,
         users.first_name, users.last_name, users.img_url
         FROM chat JOIN users
-        ON (users.id = chat.sender_id)
-    `);
+        ON (users.id = chat.sender_id) WHERE 
+        ((chat.sender_id = $1 AND chat.recipient_id = $2) OR (chat.sender_id = $2 AND chat.recipient_id = $1)) 
+    `,
+        [senderId, recipientId]
+    );
     return result.rows;
 }
 
-async function createMsg(sender_id, msg) {
+async function getLastMsg(id) {
     const result = await db.query(
         `
-        INSERT INTO chat (sender_id, msg)
-        VALUES ($1, $2) RETURNING *
+        SELECT * FROM chat WHERE (sender_id = $1 OR recipient_id = $1) 
+        ORDER BY id DESC
     `,
-        [sender_id, msg]
+        [id]
     );
     return result.rows[0];
+}
+
+async function createMsg(sender_id, recipient_id, msg) {
+    const result = await db.query(
+        `
+        INSERT INTO chat (sender_id, recipient_id, msg)
+        VALUES ($1, $2, $3) RETURNING *
+    `,
+        [sender_id, recipient_id, msg]
+    );
+    return result.rows[0];
+}
+
+async function getPodcastByName(pod_name) {
+    const result = await db.query(
+        `
+        SELECT * FROM podcast WHERE pod_name = $1
+    `,
+        [pod_name]
+    );
+    return result.rows[0];
+}
+
+async function getPods(searchQuery) {
+    if (!searchQuery) {
+        return null;
+    }
+    const result = await db.query(
+        `
+            SELECT * FROM podcast WHERE pod_name ILIKE $1
+        `,
+        [searchQuery + "%"]
+    );
+    return result.rows;
 }
 
 module.exports = {
@@ -231,4 +269,7 @@ module.exports = {
     getFriendships,
     getChatMsg,
     createMsg,
+    getLastMsg,
+    getPodcastByName,
+    getPods,
 };

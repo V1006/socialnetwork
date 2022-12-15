@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import FriendList from "./friendList";
 import { useState, useEffect } from "react";
 
-export default function ProfilePicture({ user }) {
+export default function ProfilePicture({ user, friendClick }) {
     const [visible, setVisible] = useState(false);
     const [pendingDot, setPendingDot] = useState(false);
 
@@ -13,6 +13,7 @@ export default function ProfilePicture({ user }) {
             setPendingDot(true);
             return;
         }
+        setPendingDot(false);
     }
 
     if (!user.img_url) {
@@ -42,6 +43,8 @@ export default function ProfilePicture({ user }) {
                     )}
 
                     <FriendList
+                        navIconClick={handleOnIconClick}
+                        friendClick={friendClick}
                         handlePendingUsers={handlePendingUsers}
                         visible={visible}
                     />

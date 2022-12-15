@@ -28,7 +28,7 @@ export default function Modal({ onClick, updateImg }) {
                     id="image"
                     accept="image/*"
                 />
-                <button>Submit</button>
+                <button className="continueButton">Submit</button>
             </form>
         </div>
     );

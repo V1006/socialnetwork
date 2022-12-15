@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import Welcome from "./welcome/welcome";
 import App from "./app/app";
+import { connect } from "./app/socket.js";
 
 const root = createRoot(document.querySelector("main"));
 try {
@@ -10,6 +11,7 @@ try {
             if (!data) {
                 root.render(<Welcome />);
             } else {
+                connect();
                 root.render(<App />);
             }
         });

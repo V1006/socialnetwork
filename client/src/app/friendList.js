@@ -1,18 +1,32 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { socket } from "./socket.js";
 
-export default function FriendList({ visible, handlePendingUsers }) {
+export default function FriendList({
+    navIconClick,
+    visible,
+    handlePendingUsers,
+    friendClick,
+}) {
     const [clickedPending, setClickedPending] = useState(false);
     const [friends, setFriends] = useState([]);
     const [pending, setPending] = useState([]);
+    console.log(friends);
     useEffect(() => {
-        async function getFriendships() {
+        /*    async function getFriendships() {
             const response = await fetch("/api/friendships");
             const ParsedJSON = await response.json();
             setFriends(ParsedJSON.filter((user) => user.accepted));
             setPending(ParsedJSON.filter((user) => !user.accepted));
         }
-        getFriendships();
+        getFriendships(); */
+
+        socket.emit("testEvent");
+
+        socket.on("getFriendListStatus", (data) => {
+            setFriends(data.filter((user) => user.accepted));
+            setPending(data.filter((user) => !user.accepted));
+        });
     }, []);
 
     useEffect(() => {
@@ -27,6 +41,11 @@ export default function FriendList({ visible, handlePendingUsers }) {
         setClickedPending(true);
     }
 
+    function handleClickOnChatIcon(friendId) {
+        navIconClick();
+        friendClick(friendId);
+    }
+
     function renderFriendList() {
         return (
             <section className="friendsListContainer">
@@ -39,6 +58,15 @@ export default function FriendList({ visible, handlePendingUsers }) {
                                     {friend.first_name} {friend.last_name}
                                 </p>
                                 <div className="acceptOrDeny">
+                                    <p
+                                        onClick={() =>
+                                            handleClickOnChatIcon(
+                                                friend.user_id
+                                            )
+                                        }
+                                    >
+                                        💬
+                                    </p>
                                     <p
                                         onClick={() =>
                                             handelDeleteClick(friend.user_id)
@@ -111,6 +139,7 @@ export default function FriendList({ visible, handlePendingUsers }) {
         // remove from pending by filtering it by id != -> new array without the accepted user for pending
         const newPending = pending.filter((user) => user.user_id !== user_id);
         setPending(newPending);
+        handlePendingUsers(newPending);
     }
 
     // handle decline friends request
@@ -125,14 +154,35 @@ export default function FriendList({ visible, handlePendingUsers }) {
 
         const newPending = pending.filter((user) => user.user_id !== user_id);
         setPending(newPending);
+        handlePendingUsers(newPending);
+    }
+
+    function renderFriendActive() {
+        return (
+            <div className="AorB">
+                <h2 className="activeList" onClick={handleFriendClick}>
+                    Friend list
+                </h2>
+                <h2 onClick={handlePendingClick}>Pending</h2>
+            </div>
+        );
+    }
+
+    function renderPendingActive() {
+        return (
+            <div className="AorB">
+                <h2 onClick={handleFriendClick}>Friend list</h2>
+                <h2 className="activeList" onClick={handlePendingClick}>
+                    Pending
+                </h2>
+            </div>
+        );
     }
 
     return (
         <motion.div className={visible ? "friendList visible" : "friendList"}>
-            <div className="AorB">
-                <h2 onClick={handleFriendClick}>Friend list</h2>
-                <h2 onClick={handlePendingClick}>Pending</h2>
-            </div>
+            {clickedPending ? renderPendingActive() : renderFriendActive()}
+
             {!clickedPending ? renderFriendList() : renderPendingList()}
         </motion.div>
     );

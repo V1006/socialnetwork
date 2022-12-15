@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { socket } from "./socket.js";
 
 export default function FriendshipButton({ user_id }) {
     const [status, setStatus] = useState(null);
@@ -29,6 +30,7 @@ export default function FriendshipButton({ user_id }) {
         if (ParsedJSON) {
             setStatus("Pending friend");
             setOutgoing(true);
+            socket.emit("newFriendRequest", user_id);
         }
     }
 

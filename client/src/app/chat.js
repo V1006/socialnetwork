@@ -1,42 +1,38 @@
-import io from "socket.io-client";
 import { useState, useEffect, useRef } from "react";
+import { socket } from "./socket.js";
 
-let socket;
-
-// lazy initialise pattern!
-const connect = () => {
-    if (!socket) {
-        socket = io.connect();
-    }
-    return socket;
-};
-
-const disconnect = () => {
-    socket.disconnect();
-    socket = null;
-};
-
-export default function Chat() {
+export default function Chat({ friendId, resetFriend }) {
     const [messages, setMessages] = useState([]);
     const listRef = useRef(null);
     const [arrowClicked, setArrowClicked] = useState(false);
+    const [user_id, setUser_id] = useState(null);
+
+    console.log(messages);
 
     useEffect(() => {
-        socket = connect();
+        socket.emit("chatMounted");
 
-        socket.on("getChat", (chatMsg) => {
+        socket.on("getChat", (chatMsg, user_id) => {
             setMessages(chatMsg);
+            setUser_id(user_id);
         });
 
-        socket.on("newMessage", (data) => {
-            console.log(data);
+        socket.emit("add user");
+
+        socket.on("private message", (data) => {
             setMessages((messages) => [...messages, data]);
         });
-
-        return () => {
-            disconnect();
-        };
     }, []);
+
+    useEffect(() => {
+        if (friendId) {
+            setArrowClicked(true);
+            socket.emit("clickedFriendID", friendId);
+            socket.on("getChat", (chatMsg) => {
+                setMessages(chatMsg);
+            });
+        }
+    }, [friendId]);
 
     useEffect(() => {
         const lastChatMessage = listRef.current.lastChild;
@@ -48,14 +44,44 @@ export default function Chat() {
     function handleKeyDown(event) {
         if (event.key === "Enter") {
             event.preventDefault();
-            socket.emit("sendMsg", event.target.value);
+            const data = { to: friendId, msg: event.target.value };
+            socket.emit("private message", data);
 
             event.target.value = "";
         }
     }
 
     function handleArrowClick() {
-        setArrowClicked(!arrowClicked);
+        resetFriend(null);
+        if (!messages.length) {
+            console.log("msg empty chat l55");
+            return;
+        }
+        if (messages[0].sender_id == user_id) {
+            resetFriend(messages[0].recipient_id);
+            setArrowClicked(!arrowClicked);
+        } else {
+            resetFriend(messages[0].sender_id);
+            setArrowClicked(!arrowClicked);
+        }
+    }
+
+    function renderMe(obj) {
+        return (
+            <li className="chat-message" key={obj.id}>
+                <img src={obj.img_url} className="chat-message-avatar"></img>
+                <p className="chat-message-text">{obj.msg}</p>
+            </li>
+        );
+    }
+
+    function renderThem(obj) {
+        return (
+            <li className="chat-message notMe" key={obj.id}>
+                <p className="chat-message-text NotMeBubble">{obj.msg}</p>
+                <img src={obj.img_url} className="chat-message-avatar"></img>
+            </li>
+        );
     }
     return (
         <>
@@ -76,19 +102,16 @@ export default function Chat() {
 
                 <div className="chat-window">
                     <ul className="chat-messages" ref={listRef}>
-                        {messages.map((obj) => (
-                            <li className="chat-message" key={obj.id}>
-                                <img
-                                    src={obj.img_url}
-                                    className="chat-message-avatar"
-                                ></img>
-                                <p className="chat-message-text">
-                                    {obj.first_name}: {obj.msg}
-                                </p>
-                            </li>
-                        ))}
+                        {messages.map((obj) =>
+                            user_id === obj.sender_id
+                                ? renderMe(obj)
+                                : renderThem(obj)
+                        )}
                     </ul>
-                    <textarea onKeyDown={handleKeyDown}></textarea>
+                    <textarea
+                        className="chat-input"
+                        onKeyDown={handleKeyDown}
+                    ></textarea>
                 </div>
             </section>
         </>
